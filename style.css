@@ -1,0 +1,167 @@
+:root {
+    --burgundy: #590a16; /* Màu đỏ nhung sậm chuẩn giống file PDF */
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background-color: var(--burgundy);
+    /* Giả lập vân xước nhẹ của nền đỏ */
+    background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 2px, transparent 2px, transparent 4px);
+    overflow-x: hidden;
+    height: 100vh;
+}
+
+.screen {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s;
+}
+
+.screen.active { opacity: 1; visibility: visible; z-index: 10; }
+
+/* --- MÀN 1 --- */
+#screen-gift {
+    display: flex; justify-content: center; align-items: center;
+    filter: blur(0px);
+    transition: filter 1.5s ease, opacity 1.5s ease, visibility 1.5s;
+    z-index: 60;
+}
+#screen-gift.active {
+    z-index: 60;
+}
+#screen-gift.fade-blur {
+    filter: blur(10px);  /* Chỉ nhòe và mờ, không phóng to gây chóng mặt */
+    opacity: 0;
+    visibility: hidden;
+    z-index: 60;
+}
+.gift-container {
+    text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center;
+}
+.aesthetic-envelope {
+    width: 350px; height: auto; animation: shakeGift 1.5s infinite; transition: transform 0.6s ease-out, opacity 0.6s ease-out;
+}
+.aesthetic-envelope.hide {
+    transform: translateY(60px) scale(0.9); opacity: 0;
+}
+.foryou-text {
+    width: 180px; margin-top: 15px; transition: opacity 0.3s;
+}
+.heart-beat { animation: heartbeat 1s infinite; }
+
+@keyframes shakeGift {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(-5deg); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(5deg); }
+    100% { transform: rotate(0deg); }
+}
+@keyframes heartbeat {
+    0% { transform: scale(1); }
+    15% { transform: scale(1.15); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.15); }
+    70% { transform: scale(1); }
+    100% { transform: scale(1); }
+}
+
+/* --- MÀN 2: HOA BUNG --- */
+#screen-animation {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: transparent;
+    z-index: 50; overflow: hidden; pointer-events: none;
+    transform: translateY(0);
+    transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.5s ease, visibility 1.5s;
+}
+#screen-animation.fall-down {
+    transform: translateY(100vh); /* Rơi tuột xuống dưới */
+    opacity: 0;
+    visibility: hidden;
+}
+.particle-flower {
+    position: absolute; transform: translate(-50%, -50%) scale(0); opacity: 0;
+    will-change: transform, opacity;
+}
+
+@keyframes burstOut {
+    0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
+    15% { opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--rot)) scale(1); opacity: 1; }
+}
+@keyframes dropDown {
+    0% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--rot)) scale(1); opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--tx)), 150vh) rotate(calc(var(--rot) + 180deg)) scale(0.8); opacity: 0; }
+}
+
+/* --- MÀN 3: SCRAPBOOK --- */
+.scrollable-screen {
+    display: block; overflow-y: auto; overflow-x: hidden;
+}
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--burgundy); }
+::-webkit-scrollbar-thumb { background: #ffb3c1; border-radius: 4px; }
+
+/* Hiệu ứng chuyển cảnh màn hình thư */
+#screen-letter {
+    will-change: transform, opacity; /* Tối ưu hóa phần cứng để load ảnh khổng lồ mượt mà */
+}
+#screen-letter.active {
+    animation: fadeInSlideUp 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+@keyframes fadeInSlideUp {
+    0% { opacity: 0; transform: translateY(40px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* HIỆU ỨNG HOA RƠI TỪ ĐẦU TRANG ĐẾN CUỐI TRANG */
+.falling-flower {
+    position: absolute;
+    top: -50px;
+    z-index: 100;
+    pointer-events: none;
+    animation: fall linear forwards;
+}
+
+@keyframes fall {
+    0% { top: -2%; transform: rotate(0deg); opacity: 0; }
+    5% { opacity: 0.9; }
+    90% { opacity: 0.9; }
+    100% { top: 100%; transform: rotate(360deg); opacity: 0; }
+}
+
+/* HIỆU ỨNG MƯA HOA DÀY ĐẶC (TRANSITION) */
+.dense-flower {
+    position: fixed;
+    top: -100px;
+    z-index: 9999; /* Luôn nổi trên cùng mọi thứ */
+    pointer-events: none;
+    will-change: transform, opacity; /* Kích hoạt tăng tốc phần cứng (GPU) chống giật */
+}
+
+/* Các quỹ đạo rơi khác nhau để tạo sự tự nhiên, không bị đồng bộ */
+@keyframes denseFall1 {
+    0% { top: -100px; transform: translateX(0px) rotate(0deg) scale(0.5); opacity: 0; }
+    20% { opacity: 1; transform: translateX(30px) rotate(90deg) scale(1); }
+    50% { transform: translateX(-20px) rotate(180deg) scale(1); }
+    80% { opacity: 1; transform: translateX(20px) rotate(270deg) scale(1.1); }
+    100% { top: 110vh; transform: translateX(-30px) rotate(360deg) scale(1.2); opacity: 0; }
+}
+
+@keyframes denseFall2 {
+    0% { top: -100px; transform: translateX(0px) rotate(0deg) scale(0.5); opacity: 0; }
+    25% { opacity: 1; transform: translateX(-35px) rotate(-90deg) scale(1); }
+    60% { transform: translateX(20px) rotate(-180deg) scale(1); }
+    85% { opacity: 1; transform: translateX(-15px) rotate(-270deg) scale(1.1); }
+    100% { top: 110vh; transform: translateX(35px) rotate(-360deg) scale(1.2); opacity: 0; }
+}
+
+@keyframes denseFall3 {
+    0% { top: -100px; transform: translateX(0px) rotate(0deg) scale(0.8); opacity: 0; }
+    30% { opacity: 1; transform: translateX(15px) rotate(45deg) scale(1); }
+    70% { transform: translateX(-10px) rotate(135deg) scale(1); }
+    100% { top: 110vh; transform: translateX(0px) rotate(200deg) scale(1.2); opacity: 0; }
+}
